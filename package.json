@@ -1,0 +1,38 @@
+{
+  "name": "@everyprotocol/kind-as",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "bin/",
+    "std/",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "kasc": "./bin/index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.26.0",
+    "@types/bun": "latest",
+    "@types/lodash-es": "^4.17.12",
+    "assemblyscript": "^0.27.36",
+    "commander": "^13.1.0",
+    "eslint": "^9.26.0",
+    "keccak256": "^1.0.6",
+    "lodash-es": "^4.17.21",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
+  },
+  "scripts": {
+    "clean": "rm -rf bin",
+    "check": "tsc --noEmit",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "b": "bun build src/index.ts --outdir bin --target node",
+    "preb": "bun run check && bun run lint",
+    "prepublishOnly": "bun run b"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
