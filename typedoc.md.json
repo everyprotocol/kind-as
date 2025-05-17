@@ -1,0 +1,30 @@
+{
+  "name": "kind-as",
+  "entryPoints": ["std/types/assembly/index.d.ts"],
+  "plugin": ["typedoc-plugin-markdown"],
+  "tsconfig": "std/types/assembly/tsconfig.json",
+  "out": "docs/md",
+  "entryFileName": "index",
+  "hideBreadcrumbs": true,
+  "hidePageHeader": true,
+  "hidePageTitle": false,
+  "indexFormat": "list",
+  "parametersFormat": "table",
+  "hideGroupHeadings": true,
+  "useCodeBlocks": true,
+  "outputFileStrategy": "members",
+  "disableSources": true,
+  "flattenOutputFiles": false,
+  "cleanOutputDir": true,
+  "readme": "none",
+  "includeVersion": false,
+  "navigation": {
+    "includeCategories": false,
+    "includeGroups": false,
+    "includeFolders": false
+  },
+  "categorizeByGroup": false,
+  "navigationLinks": {
+    "Every Protocol": "https://docs.every.fun"
+  }
+}

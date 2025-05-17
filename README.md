@@ -1,5 +1,8 @@
-# kind-as
+---
+title: External Markdown
+---
 
+abc
 To install dependencies:
 
 ```bash

@@ -21,6 +21,8 @@
     "eslint": "^9.26.0",
     "keccak256": "^1.0.6",
     "lodash-es": "^4.17.21",
+    "typedoc": "^0.28.4",
+    "typedoc-plugin-markdown": "^4.6.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1"
   },
@@ -28,9 +30,13 @@
     "clean": "rm -rf bin",
     "check": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
-    "b": "bun build src/index.ts --outdir bin --target node",
-    "preb": "bun run check && bun run lint",
-    "prepublishOnly": "bun run b"
+    "build": "bun build src/index.ts --outdir bin --target node",
+    "prebuild": "bun run check && bun run lint",
+    "prepublishOnly": "bun run build",
+    "b": "bun run build",
+    "docs": "bun run docs:html && bun run docs:md",
+    "docs:md": "bun run prebuild && typedoc --options typedoc.md.json",
+    "docs:html": "bun run prebuild && typedoc --options typedoc.html.json"
   },
   "publishConfig": {
     "access": "public"

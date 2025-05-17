@@ -1,0 +1,15 @@
+{
+  "name": "kind-as",
+  "entryPoints": ["std/types/assembly/index.d.ts"],
+  "tsconfig": "std/types/assembly/tsconfig.json",
+  "out": "docs/html",
+  "disableSources": true,
+  "cleanOutputDir": true,
+  "readme": "README.md",
+  "includeVersion": true,
+  "categorizeByGroup": false,
+  "navigationLinks": {
+    "Every Protocol": "https://docs.every.fun"
+  },
+  "visibilityFilters": {}
+}
