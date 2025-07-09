@@ -5,11 +5,14 @@
   "out": "docs/html",
   "disableSources": true,
   "cleanOutputDir": true,
+  "favicon": "typedoc.svg",
   "readme": "README.md",
   "includeVersion": true,
   "categorizeByGroup": false,
   "navigationLinks": {
-    "Every Protocol": "https://docs.every.fun"
+    "Github": "https://github.com/everyprotocol",
+    "Docs": "https://docs.every.fun",
+    "Every": "https://every.fun"
   },
   "visibilityFilters": {}
 }
