@@ -1,5 +1,6 @@
 name: Node.js Package
 
+# ai! modify to trigger on push tag
 on:
   release:
     types: [created]
