@@ -5,7 +5,7 @@
   "out": "docs/html",
   "disableSources": true,
   "cleanOutputDir": true,
-  "favicon": "typedoc.svg",
+  "favicon": "every-typedoc.svg",
   "readme": "README.md",
   "includeVersion": true,
   "categorizeByGroup": false,
