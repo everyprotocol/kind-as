@@ -1,12 +1,13 @@
 {
   "name": "kind-as",
-  "entryPoints": ["std/types/assembly/index.d.ts"],
-  "tsconfig": "std/types/assembly/tsconfig.json",
-  "out": "docs/html",
+  "entryPoints": ["../std/types/assembly/index.d.ts"],
+  "tsconfig": "../std/types/assembly/tsconfig.json",
+  "plugin": ["./typedoc-plugin-vercel-analytics.js"],
+  "out": "../docs/html",
   "disableSources": true,
   "cleanOutputDir": true,
   "favicon": "every-typedoc.svg",
-  "readme": "README.md",
+  "readme": "HOME.md",
   "includeVersion": true,
   "categorizeByGroup": false,
   "navigationLinks": {

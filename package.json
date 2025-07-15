@@ -35,8 +35,8 @@
     "prepublishOnly": "bun run build",
     "b": "bun run build",
     "docs": "bun run docs:html && bun run docs:md",
-    "docs:md": "bun run prebuild && typedoc --options typedoc.md.json",
-    "docs:html": "bun run prebuild && typedoc --options typedoc.html.json"
+    "docs:md": "bun run prebuild && typedoc --options typedoc/typedoc.md.json",
+    "docs:html": "bun run prebuild && typedoc --options typedoc/typedoc.html.json"
   },
   "publishConfig": {
     "access": "public"
