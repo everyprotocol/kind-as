@@ -1,6 +1,7 @@
 import { program as _program } from "commander";
 import { KindCompiler } from "./compiler.js";
 
+// ai! add options: --debug(debug false), --shrinkLevel, --optimmizeLevel
 export const program = _program
   .name("kasc")
   .description("Compile kind contracts to Wasm")
