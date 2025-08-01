@@ -15,9 +15,17 @@ export class KindCompiler {
     this.compiler = `kasc-${version}(asc-${ascVersion})`;
   }
 
-  async compile(file: string, out: string, text?: string, lib?: string) {
+  async compile(
+    file: string, 
+    out: string, 
+    text?: string, 
+    lib?: string, 
+    debug = false, 
+    shrinkLevel = 0, 
+    optimizeLevel = 3
+  ) {
     const { libPath, language } = this.resovleLib(lib);
-    const options = this.fixedOptions();
+    const options = this.getOptions(debug, shrinkLevel, optimizeLevel);
     const userOptions = [file, "--lib", libPath, "--outFile", out, ...(text ? ["--textFile", text] : [])];
     const tr = new KindTransform(language, this.compiler, options.join(" "));
     const result = await ascMain([...options, ...userOptions], {
@@ -44,16 +52,16 @@ export class KindCompiler {
     }
   }
 
-  fixedOptions() {
+  getOptions(debug = false, shrinkLevel = 0, optimizeLevel = 3) {
     return [
       "--runtime",
       "stub",
       "--optimizeLevel",
-      "3",
+      optimizeLevel.toString(),
       "--shrinkLevel",
-      "0",
+      shrinkLevel.toString(),
       "--converge",
-      "--noAssert",
+      ...(debug ? [] : ["--noAssert"]),
       "--enable",
       "reference-types",
       "--use",
