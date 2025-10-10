@@ -1,75 +1,5 @@
 /// <reference types="assemblyscript/std/assembly/index.d.ts"/>
 
-declare class Hash256 {
-  private constructor();
-}
-
-declare class Bytes32 {
-  /**
-   * Private constructor to prevent direct instantiation.
-   */
-  private constructor();
-
-  /**
-   * Extracts an 8-bit unsigned integer (u8) at the given offset.
-   * @param offset - The byte offset (0 to 31).
-   * @returns The extracted unsigned 8-bit integer.
-   */
-  extractU8(offset: u8): u8;
-
-  /**
-   * Extracts a 16-bit unsigned integer (u16) at the given offset.
-   * @param offset - The byte offset (0 to 30).
-   * @returns The extracted unsigned 16-bit integer.
-   */
-  extractU16(offset: u8): u16;
-
-  /**
-   * Extracts a 32-bit unsigned integer (u32) at the given offset.
-   * @param offset - The byte offset (0 to 28).
-   * @returns The extracted unsigned 32-bit integer.
-   */
-  extractU32(offset: u8): u32;
-
-  /**
-   * Extracts a 64-bit unsigned integer (u64) at the given offset.
-   * @param offset - The byte offset (0 to 24).
-   * @returns The extracted unsigned 64-bit integer.
-   */
-  extractU64(offset: u8): u64;
-
-  /**
-   * Extracts a 128-bit unsigned integer (u128) at the given offset.
-   * @param offset - The byte offset (0 to 16).
-   * @returns The extracted unsigned 128-bit integer.
-   */
-  // extractU128(offset: u8): u128;
-}
-
-declare class Value {
-  private constructor();
-}
-
-declare class Artifact {
-  private constructor();
-}
-
-declare class Json {
-  private constructor();
-}
-
-declare class Image {
-  private constructor();
-}
-
-declare class Projection {
-  private constructor();
-}
-
-declare class Connections {
-  private constructor();
-}
-
 declare enum ColorType {
   L8,
   La8,
@@ -97,93 +27,152 @@ declare enum Interpolation {
   Bicubic,
 }
 
+declare type Json = externref;
+declare type Image = externref;
+declare type Enumeration = externref;
+declare type Permutation = externref;
+declare type Value = externref;
+declare type Unique = externref;
+declare type Arcs = externref;
+declare type Projection = externref;
+
+declare abstract class Element {
+  protected constructor();
+  hex(): String;
+}
+
+declare class JsonHash extends Element {
+  private constructor();
+  load(): Json;
+}
+
+declare class ImageHash extends Element {
+  private constructor();
+  load(): Image;
+}
+
+declare class WasmHash extends Element {
+  private constructor();
+}
+
+declare class EnumHash extends Element {
+  private constructor();
+  load(): Enumeration;
+}
+
+declare class PermHash extends Element {
+  private constructor();
+  load(): Permutation;
+}
+
+declare class ValueRef extends Element {
+  private constructor();
+  load(): Value;
+}
+
+declare class UniqueRef extends Element {
+  private constructor();
+  load(): Unique;
+}
+
+declare class Info extends Element {
+  private constructor();
+  u8(offset: u8): u8;
+  u16(offset: u8): u16;
+  u32(offset: u8): u32;
+  u64(offset: u8): u64;
+  i8(offset: u8): i8;
+  i16(offset: u8): i16;
+  i32(offset: u8): i32;
+  i64(offset: u8): i64;
+  f32(offset: u8): f32;
+  f64(offset: u8): f64;
+}
+
 declare abstract class Pixel {
-  type: u8;
+  readonly c: ColorType;
+  protected constructor(c: ColorType);
+
+  static l8(y: u8): Pixel.L8;
+  static la8(y: u8, a: u8): Pixel.La8;
+
+  static rgb8(r: u8, g: u8, b: u8): Pixel.Rgb8;
+  static rgba8(r: u8, g: u8, b: u8, a: u8): Pixel.Rgba8;
+
+  static rgb16(r: u16, g: u16, b: u16): Pixel.Rgb16;
+  static rgba16(r: u16, g: u16, b: u16, a: u16): Pixel.Rgba16;
+
+  static rgbF32(r: f32, g: f32, b: f32): Pixel.RgbF32;
+  static rgbaF32(r: f32, g: f32, b: f32, a: f32): Pixel.RgbaF32;
 }
 
-declare class PixelL8 extends Pixel {
-  y: u8;
-  constructor(y: u8);
-}
+declare namespace Pixel {
+  class L8 extends Pixel {
+    y: u8;
+    constructor(y: u8);
+  }
 
-declare class PixelLa8 extends Pixel {
-  y: u8;
-  a: u8;
-  constructor(y: u8, a: u8);
-}
+  class La8 extends Pixel {
+    y: u8;
+    a: u8;
+    constructor(y: u8, a: u8);
+  }
 
-declare class PixelRgb8 extends Pixel {
-  r: u8;
-  g: u8;
-  b: u8;
-  constructor(r: u8, g: u8, b: u8);
-}
+  class Rgb8 extends Pixel {
+    r: u8;
+    g: u8;
+    b: u8;
+    constructor(r: u8, g: u8, b: u8);
+  }
 
-declare class PixelRgba8 extends Pixel {
-  r: u8;
-  g: u8;
-  b: u8;
-  a: u8;
-  constructor(r: u8, g: u8, b: u8, a: u8);
-}
+  class Rgba8 extends Pixel {
+    r: u8;
+    g: u8;
+    b: u8;
+    a: u8;
+    constructor(r: u8, g: u8, b: u8, a: u8);
+  }
 
-declare class PixelL16 extends Pixel {
-  y: u16;
-  constructor(y: u16);
-}
+  class L16 extends Pixel {
+    y: u16;
+    constructor(y: u16);
+  }
 
-declare class PixelLa16 extends Pixel {
-  y: u16;
-  a: u16;
-  constructor(y: u16, a: u16);
-}
+  class La16 extends Pixel {
+    y: u16;
+    a: u16;
+    constructor(y: u16, a: u16);
+  }
 
-declare class PixelRgb16 extends Pixel {
-  r: u16;
-  g: u16;
-  b: u16;
-  constructor(r: u16, g: u16, b: u16);
-}
+  class Rgb16 extends Pixel {
+    r: u16;
+    g: u16;
+    b: u16;
+    constructor(r: u16, g: u16, b: u16);
+  }
 
-declare class PixelRgba16 extends Pixel {
-  r: u16;
-  g: u16;
-  b: u16;
-  a: u16;
-  constructor(r: u16, g: u16, b: u16, a: u16);
-}
+  class Rgba16 extends Pixel {
+    r: u16;
+    g: u16;
+    b: u16;
+    a: u16;
+    constructor(r: u16, g: u16, b: u16, a: u16);
+  }
 
-declare class PixelRgbF32 extends Pixel {
-  r: f32;
-  g: f32;
-  b: f32;
-  constructor(r: f32, g: f32, b: f32);
-}
+  class RgbF32 extends Pixel {
+    r: f32;
+    g: f32;
+    b: f32;
+    constructor(r: f32, g: f32, b: f32);
+  }
 
-declare class PixelRgbaF32 extends Pixel {
-  r: f32;
-  g: f32;
-  b: f32;
-  a: f32;
-  constructor(r: f32, g: f32, b: f32, a: f32);
-}
-
-declare class PointU32 {
-  x: u32;
-  y: u32;
-  constructor(x: u32, y: u32);
-}
-
-declare class PointI32 {
-  x: i32;
-  y: i32;
-  constructor(x: i32, y: i32);
-}
-
-declare class PointF32 {
-  x: f32;
-  y: f32;
-  constructor(x: f32, y: f32);
+  class RgbaF32 extends Pixel {
+    r: f32;
+    g: f32;
+    b: f32;
+    a: f32;
+    constructor(r: f32, g: f32, b: f32, a: f32);
+  }
 }
 
 declare class Rect {
@@ -194,7 +183,7 @@ declare class Rect {
   constructor(left: i32, top: i32, width: u32, height: u32);
 }
 
-declare class Matrix3x3F32 {
+declare class Mat3 {
   e0: f32;
   e1: f32;
   e2: f32;
@@ -207,361 +196,163 @@ declare class Matrix3x3F32 {
   constructor(e0: f32, e1: f32, e2: f32, e3: f32, e4: f32, e5: f32, e6: f32, e7: f32, e8: f32);
 }
 
-declare class ControlPointsF32 {
-  x0: f32;
-  y0: f32;
-  x1: f32;
-  y1: f32;
-  x2: f32;
-  y2: f32;
-  x3: f32;
-  y3: f32;
-  constructor(x0: f32, y0: f32, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32);
+type PointF32 = u64;
+type PointU32 = u64;
+type PointI32 = u64;
+
+declare namespace Point {
+  function f32(x: f32, y: f32): PointF32;
+  function u32(x: u32, y: u32): PointU32;
+  function i32(x: i32, y: i32): PointI32;
+}
+
+declare class ControlPoints {
+  p0: PointF32;
+  p1: PointF32;
+  p2: PointF32;
+  p3: PointF32;
+  constructor(p0: PointF32, p1: PointF32, p2: PointF32, p3: PointF32);
+  static fromScalars(x0: f32, y0: f32, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32): ControlPoints;
+  static fromPoints(p0: PointF32, p1: PointF32, p2: PointF32, p3: PointF32): ControlPoints;
 }
 
 declare function kind(constructor: Constructor): void;
 
 declare function revert(): void;
 
+
 declare namespace object {
-  export function universe(): u64;
-
-  export function set(): u64;
-
-  export function kind(): u64;
-
-  export function id(): u64;
-
-  export function rev(): u32;
-
-  export function asset(sel: u32): Hash256;
-
-  export function assetUri(sel: u32): String;
-
-  export function assetUri2(name: String): String;
-
-  export function setRev(): u32;
-
-  export function setData(): Json;
-
-  export function kindRev(): u32;
-
-  export function kindData(): Json;
-}
-
-declare namespace connection {
-  export function all(): Connections;
-
-  export function filter(kind: u64, rel: u64, set: u64): Connections;
-
-  export function count(conns: Connections): u32;
-
-  export function relationIdAt(conns: Connections, index: u32): u64;
-
-  export function relationDataAt(conns: Connections, index: u32): u64;
-
-  export function objectKindAt(conns: Connections, index: u32): u64;
-
-  export function objectSetAt(conns: Connections, index: u32): u64;
-
-  export function objectIdAt(conns: Connections, index: u32): u64;
-
-  export function objectAssetAt(conns: Connections, index: u32, sel: u32): Hash256;
-}
-
-declare namespace image {
-  /**
-   * Creates a new image.
-   *
-   * @param w - Width of the image in pixels
-   * @param h - Height of the image in pixels
-   * @param color - Color type for the image buffer
-   *
-   * @returns A new DynamicImage instance
-   */
-  export function create(w: u32, h: u32, color: ColorType): Image;
-
-  /**
-   * Constructs a new image by copying a pixel
-   */
-  export function fromPixel(w: u32, h: u32, pixel: Pixel): Image;
-
-  export function load(ma: Bytes32): Image;
-
-  /**
-   * Return a cut-out of this image delimited by the bounding rectangle.
-   */
-  export function crop(im: Image, x: u32, y: u32, width: u32, height: u32): Image;
-
-  /**
-   * Return this image's color type.
-   */
-  export function color(im: Image): ColorType;
-
-  /**
-   * Returns the width of the underlying image
-   */
-  export function width(im: Image): u32;
-
-  /**
-   * Returns the height of the underlying image
-   */
-  export function height(im: Image): u32;
-
-  /**
-   * Return a grayscale version of this image.
-   * Returns `Luma` images in most cases. However, for `f32` images,
-   * this will return a grayscale `Rgb/Rgba` image instead.
-   */
-  export function grayscale(im: Image): Image;
-
-  /**
-   * Invert the colors of this image.
-   * This method operates inplace.
-   */
-  export function invertMut(im: Image): void;
-
-  /**
-   * Resize this image using the specified filter algorithm.
-   * Returns a new image. The image's aspect ratio is preserved.
-   * The image is scaled to the maximum possible size that fits
-   * within the bounds specified by `nwidth` and `nheight`.
-   */
-  export function resize(im: Image, nwidth: u32, nheight: u32, filter: FilterType): Image;
-
-  /**
-   * Resize this image using the specified filter algorithm.
-   * Returns a new image. Does not preserve aspect ratio.
-   * `nwidth` and `nheight` are the new image's dimensions
-   */
-  export function resizeExact(im: Image, nwidth: u32, nheight: u32, filter: FilterType): Image;
-
-  /**
-   * Scale this image down to fit within a specific size.
-   * Returns a new image. The image's aspect ratio is preserved.
-   * The image is scaled to the maximum possible size that fits
-   * within the bounds specified by `nwidth` and `nheight`.
-   * This method uses a fast integer algorithm where each source
-   * pixel contributes to exactly one target pixel.
-   * May give aliasing artifacts if new size is close to old size.
-   */
-  export function thumbnail(im: Image, nwidth: u32, nheight: u32): Image;
-
-  /**
-   * Scale this image down to a specific size.
-   * Returns a new image. Does not preserve aspect ratio.
-   * `nwidth` and `nheight` are the new image's dimensions.
-   * This method uses a fast integer algorithm where each source
-   * pixel contributes to exactly one target pixel.
-   * May give aliasing artifacts if new size is close to old size.
-   */
-  export function thumbnailExact(im: Image, nwidth: u32, nheight: u32): Image;
-
-  /**
-   * Resize this image using the specified filter algorithm.
-   * Returns a new image. The image's aspect ratio is preserved.
-   * The image is scaled to the maximum possible size that fits
-   * within the larger (relative to aspect ratio) of the bounds
-   * specified by `nwidth` and `nheight`, then cropped to
-   * fit within the other bound.
-   */
-  export function resizeToFill(im: Image, nwidth: u32, nheight: u32, filter: FilterType): Image;
-
-  /**
-   * Performs a Gaussian blur on this image.
-   * `sigma` is a measure of how much to blur by.
-   */
-  export function blur(im: Image, sigma: f32): Image;
-
-  /**
-   * Performs an unsharpen mask on this image.
-   * `sigma` is the amount to blur the image by.
-   * `threshold` is a control of how much to sharpen.
-   */
-  export function unsharpen(im: Image, sigma: f32, threshold: i32): Image;
-
-  /**
-   * Filters this image with the specified 3x3 kernel.
-   * Adjust the contrast of this image.
-   * `contrast` is the amount to adjust the contrast by.
-   * Negative values decrease the contrast and positive values increase the contrast.
-   */
-  export function adjustContrast(im: Image, c: f32): Image;
-
-  /**
-   * Brighten the pixels of this image.
-   * `value` is the amount to brighten each pixel by.
-   * Negative values decrease the brightness and positive values increase it.
-   */
-  export function brighten(im: Image, value: i32): Image;
-
-  /**
-   * Hue rotate the supplied image.
-   * `value` is the degrees to rotate each pixel by.
-   * 0 and 360 do nothing, the rest rotates by the given degree value.
-   * just like the css webkit filter hue-rotate(180)
-   */
-  export function huerotate(im: Image, value: i32): Image;
-
-  /**
-   * Flip this image vertically
-   */
-  export function flipv(im: Image): Image;
-
-  /**
-   * Flip this image horizontally
-   */
-  export function fliph(im: Image): Image;
-
-  /**
-   * Rotate this image 90 degrees clockwise.
-   */
-  export function rotate90(im: Image): Image;
-
-  /**
-   * Rotate this image 180 degrees clockwise.
-   */
-  export function rotate180(im: Image): Image;
-
-  /**
-   * Rotate this image 270 degrees clockwise.
-   */
-  export function rotate270(im: Image): Image;
-
-  export function rotate(im: Image, center: PointF32, theta: f32, interpolation: Interpolation, _default: Pixel): Image;
-
-  export function rotateAboutCenter(im: Image, theta: f32, interpolation: Interpolation, _default: Pixel): Image;
-
-  export function translate(im: Image, t: PointI32): Image;
-
-  export function warp(im: Image, projection: Projection, interpolation: Interpolation, _default: Pixel): Image;
-
-  export function warpInto(
-    im: Image,
-    projection: Projection,
-    interpolation: Interpolation,
-    _default: Pixel,
-    out: Image
-  ): void;
-
-  /**
-   * Overlay an image at a given coordinate (x, y)
-   */
-  export function overlay(bottom: Image, top: Image, x: i64, y: i64): void;
-
-  export function drawCross(im: Image, color: Pixel, x: i32, y: i32): Image;
-
-  export function drawCrossMut(im: Image, color: Pixel, x: i32, y: i32): void;
-
-  export function drawCubicBezierCurve(
-    im: Image,
-    start: PointF32,
-    end: PointF32,
-    controlA: PointF32,
-    controlB: PointF32,
-    color: Pixel
-  ): Image;
-
-  export function drawCubicBezierCurveMut(
-    im: Image,
-    start: PointF32,
-    end: PointF32,
-    controlA: PointF32,
-    controlB: PointF32,
-    color: Pixel
-  ): void;
-
-  export function drawFilledCircle(im: Image, center: PointI32, radius: i32, color: Pixel): Image;
-
-  export function drawFilledCircleMut(im: Image, center: PointI32, radius: i32, color: Pixel): void;
-
-  export function drawFilledEllipse(
-    im: Image,
-    center: PointI32,
-    widthRadius: i32,
-    heightRadius: i32,
-    color: Pixel
-  ): Image;
-
-  export function drawFilledEllipseMut(
-    im: Image,
-    center: PointI32,
-    widthRadius: i32,
-    heightRadius: i32,
-    color: Pixel
-  ): void;
-
-  export function drawFilledRect(im: Image, rect: Rect, color: Pixel): Image;
-
-  export function drawFilledRectMut(im: Image, rect: Rect, color: Pixel): void;
-
-  export function drawHollowCircle(im: Image, center: PointI32, radius: i32, color: Pixel): Image;
-
-  export function drawHollowCircleMut(im: Image, center: PointI32, radius: i32, color: Pixel): void;
-
-  export function drawHollowEllipse(
-    im: Image,
-    center: PointI32,
-    widthRadius: i32,
-    heightRadius: i32,
-    color: Pixel
-  ): Image;
-
-  export function drawHollowEllipseMut(
-    im: Image,
-    center: PointI32,
-    widthRadius: i32,
-    heightRadius: i32,
-    color: Pixel
-  ): void;
-
-  export function drawHollowRect(im: Image, rect: Rect, color: Pixel): Image;
-
-  export function drawHollowRectMut(im: Image, rect: Rect, color: Pixel): void;
-
-  export function drawLineSegment(im: Image, start: PointF32, end: PointF32, color: Pixel): Image;
-
-  export function drawLineSegmentMut(im: Image, start: PointF32, end: PointF32, color: Pixel): void;
-}
-
-declare namespace projection {
-  export function fromControlPoints(from: ControlPointsF32, to: ControlPointsF32): Projection;
-
-  export function fromMatrix(transform: Matrix3x3F32): Projection;
-
-  export function translate(tx: f32, ty: f32): Projection;
-
-  export function rotate(theta: f32): Projection;
-
-  export function scale(sx: f32, sy: f32): Projection;
-
-  export function invert(me: Projection): Projection;
-
-  export function andThen(me: Projection, other: Projection): Projection;
+  function universe(): u64;
+  function set(): u64;
+  function id(): u64;
+  function kind(): u64;
+  function rev(): u32;
+  function kindRev(): u32;
+  function setRev(): u32;
+  function setDataJson(): Json;
+  function setDataEnum(): Enumeration;
+  function kindDataJson(): Json;
+  function kindDataEnum(): Enumeration;
+  function inbound(): Arcs;
+  function inboundWith(kind: u64, rel: u64, set: u64): Arcs;
 }
 
 declare namespace json {
-  export function create(value: String): Json;
+  function load(hash: JsonHash): Json;
+  function create(): Json;
+  function from(json: string): Json;
+  function clone(json: Json): Json;
+  function remove(json: Json, ptr: string): void;
+  function set(json: Json, ptr: string, val: Json): void;
+  function setU64(json: Json, ptr: string, val: u64): void;
+  function setBool(json: Json, ptr: string, val: bool): void;
+  function setString(json: Json, ptr: string, val: string): void;
+  function get(json: Json, ptr: string): Json;
+  function getU64(json: Json, ptr: string): u64;
+  function getBool(json: Json, ptr: string): bool;
+  function getString(json: Json, ptr: string): string;
+}
 
-  export function load(ma: Bytes32): Json;
+declare namespace image {
+  function create(w: u32, h: u32, color: ColorType): Image;
+  function fromPixel(w: u32, h: u32, pixel: Pixel): Image;
+  function load(hash: ImageHash): Image;
+  function crop(im: Image, x: u32, y: u32, width: u32, height: u32): Image;
+  function color(im: Image): ColorType;
+  function width(im: Image): u32;
+  function height(im: Image): u32;
+  function grayscale(im: Image): Image;
+  function invertMut(im: Image): void;
+  function resize(im: Image, nwidth: u32, nheight: u32, filter: FilterType): Image;
+  function resizeExact(im: Image, nwidth: u32, nheight: u32, filter: FilterType): Image;
+  function thumbnail(im: Image, nwidth: u32, nheight: u32): Image;
+  function thumbnailExact(im: Image, nwidth: u32, nheight: u32): Image;
+  function resizeToFill(im: Image, nwidth: u32, nheight: u32, filter: FilterType): Image;
+  function blur(im: Image, sigma: f32): Image;
+  function unsharpen(im: Image, sigma: f32, threshold: i32): Image;
+  function adjustContrast(im: Image, c: f32): Image;
+  function brighten(im: Image, value: i32): Image;
+  function huerotate(im: Image, value: i32): Image;
+  function flipv(im: Image): Image;
+  function fliph(im: Image): Image;
+  function rotate90(im: Image): Image;
+  function rotate180(im: Image): Image;
+  function rotate270(im: Image): Image;
+  function rotate(im: Image, center: PointF32, theta: f32, interpolation: Interpolation, def: Pixel): Image;
+  function rotateAboutCenter(im: Image, theta: f32, interpolation: Interpolation, def: Pixel): Image;
+  function translate(im: Image, t: PointI32): Image;
+  function warp(im: Image, projection: Projection, interpolation: Interpolation, def: Pixel): Image;
+  function warpInto(im: Image, projection: Projection, interpolation: Interpolation, def: Pixel, out: Image): void;
+  function overlay(bottom: Image, top: Image, x: i64, y: i64): void;
+  function drawCross(im: Image, color: Pixel, x: i32, y: i32): Image;
+  function drawCrossMut(im: Image, color: Pixel, x: i32, y: i32): void;
+  function drawCubicBezierCurve(im: Image, start: PointF32, end: PointF32, controlA: PointF32, controlB: PointF32, color: Pixel): Image;
+  function drawCubicBezierCurveMut(im: Image, start: PointF32, end: PointF32, controlA: PointF32, controlB: PointF32, color: Pixel): void;
+  function drawFilledCircle(im: Image, center: PointI32, radius: i32, color: Pixel): Image;
+  function drawFilledCircleMut(im: Image, center: PointI32, radius: i32, color: Pixel): void;
+  function drawFilledEllipse(im: Image, center: PointI32, widthRadius: i32, heightRadius: i32, color: Pixel): Image;
+  function drawFilledEllipseMut(im: Image, center: PointI32, widthRadius: i32, heightRadius: i32, color: Pixel): void;
+  function drawFilledRect(im: Image, rect: Rect, color: Pixel): Image;
+  function drawFilledRectMut(im: Image, rect: Rect, color: Pixel): void;
+  function drawHollowCircle(im: Image, center: PointI32, radius: i32, color: Pixel): Image;
+  function drawHollowCircleMut(im: Image, center: PointI32, radius: i32, color: Pixel): void;
+  function drawHollowEllipse(im: Image, center: PointI32, widthRadius: i32, heightRadius: i32, color: Pixel): Image;
+  function drawHollowEllipseMut(im: Image, center: PointI32, widthRadius: i32, heightRadius: i32, color: Pixel): void;
+  function drawHollowRect(im: Image, rect: Rect, color: Pixel): Image;
+  function drawHollowRectMut(im: Image, rect: Rect, color: Pixel): void;
+  function drawLineSegment(im: Image, start: PointF32, end: PointF32, color: Pixel): Image;
+  function drawLineSegmentMut(im: Image, start: PointF32, end: PointF32, color: Pixel): void;
+}
 
-  export function clone(json: Json): Json;
+declare namespace enumeration {
+  function load(hash: EnumHash): Enumeration;
+  function rows(enum_: Enumeration): u32;
+  function cols(enum_: Enumeration): u32;
+  function aux(enum_: Enumeration): u32;
+  function auxInfo(enum_: Enumeration, index: u32): Info;
+  function auxJson(enum_: Enumeration, index: u32): Json;
+  function auxImage(enum_: Enumeration, index: u32): Image;
+  function cellInfo(enum_: Enumeration, row: u32, col: u32): Info;
+  function cellJson(enum_: Enumeration, row: u32, col: u32): Json;
+  function cellImage(enum_: Enumeration, row: u32, col: u32): Image;
+}
 
-  export function remove(json: Json, ptr: String): void;
+declare namespace value {
+  function load(ref: ValueRef): Value;
+  function index(value: Value): u64;
+  function std(value: Value): u8;
+  function decimals(value: Value): u8;
+  function symbol(value: Value): string;
+  function picture(value: Value): Image;
+}
 
-  export function set(json: Json, ptr: String, val: Json): void;
+declare namespace unique {
+  function load(ref: UniqueRef): Unique;
+  function index(unique: Unique): u64;
+  function id(unique: Unique): u64;
+  function std(unique: Unique): u8;
+  function decimals(unique: Unique): u8;
+  function symbol(unique: Unique): string;
+  function picture(unique: Unique): Image;
+}
 
-  export function setU64(json: Json, ptr: String, val: u64): void;
+declare namespace arcs {
+  function count(arcs: Arcs): u32;
+  function relationId(arcs: Arcs, index: u32): u64;
+  function relationData(arcs: Arcs, index: u32): u64;
+  function objectKind(arcs: Arcs, index: u32): u64;
+  function objectSet(arcs: Arcs, index: u32): u64;
+  function objectId(arcs: Arcs, index: u32): u64;
+  function objectFacetJson(arcs: Arcs, index: u32, sel: u32): Json;
+  function objectFacetImage(arcs: Arcs, index: u32, sel: u32): Image;
+}
 
-  export function setBool(json: Json, ptr: String, val: boolean): void;
-
-  export function setString(json: Json, ptr: String, val: String): void;
-
-  export function get(json: Json, ptr: String): Json;
-
-  export function getU64(json: Json, ptr: String): u64;
-
-  export function getBool(json: Json, ptr: String): boolean;
-
-  export function getString(json: Json, ptr: String): String;
+declare namespace projection {
+  function fromControlPoints(from: ControlPoints, to: ControlPoints): Projection;
+  function fromMatrix(transform: Mat3): Projection;
+  function translate(tx: f32, ty: f32): Projection;
+  function rotate(theta: f32): Projection;
+  function scale(sx: f32, sy: f32): Projection;
+  function invert(me: Projection): Projection;
+  function andThen(me: Projection, other: Projection): Projection;
 }

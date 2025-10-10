@@ -1,5 +1,7 @@
 import { program as _program } from "commander";
 import { KindCompiler } from "./compiler.js";
+import { version } from "../package.json";
+import { version as ascVersion } from "assemblyscript/asc";
 
 export const program = _program
   .name("kasc")
@@ -13,7 +15,7 @@ export const program = _program
   .option("--lib <lib>", "Use a custom library")
   .action(async (file, options) => {
     const kasc = new KindCompiler();
-    await kasc.compile(
+    const result = await kasc.compile(
       file,
       options.out,
       options.text,
@@ -22,5 +24,7 @@ export const program = _program
       parseInt(options.shrink),
       parseInt(options.optimize)
     );
+    if (result.error) process.exitCode = 1;
   })
+  .version(`kasc ${version} (asc ${ascVersion})`)
   .showHelpAfterError(true);

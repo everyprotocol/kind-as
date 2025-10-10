@@ -1,7 +1,6 @@
 import {
   Parser,
   NodeKind,
-  Node,
   ClassDeclaration,
   SourceKind,
   IdentifierExpression,
@@ -15,87 +14,75 @@ import {
 import binaryen from "assemblyscript/binaryen";
 import { Transform } from "assemblyscript/transform";
 import keccak256 from "keccak256";
-import * as _ from "lodash-es";
-import { KindMeta } from "./metadata.js";
+import { CompilationInfo, KindSections } from "./sections";
+import { resolveElementType } from "./elements";
 
-export class KindTransform extends Transform {
-  language: string;
-  compiler: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  kind?: any;
-  source?: string;
-  options: string;
+type DecoratorModel = { name: string };
+type FieldModel = { name: string; type: string };
+type ParamModel = { name: string; type: string };
+type MethodModel = { name: string; params: ParamModel[]; ret: string };
 
-  constructor(language: string, compiler: string, options: string) {
-    super();
-    this.language = language;
-    this.compiler = compiler;
-    this.options = options;
+class KindContract {
+  readonly decorators: DecoratorModel[];
+  readonly clazz: string;
+  readonly fields: FieldModel[];
+  readonly methods: MethodModel[];
+
+  constructor(source: Source) {
+    const cls = KindContract.singleTopClass(source);
+    const { decorators, name, fields, methods } = KindContract.extractClass(cls);
+    this.decorators = decorators;
+    this.clazz = name;
+    this.fields = fields;
+    this.methods = methods;
   }
 
-  async afterParse(parser: Parser) {
-    const userEntries = _.filter(parser.sources, this.isUserEntrySource);
-    if (userEntries.length != 1) {
-      throw new Error("more than 1 user entry");
+  validate() {
+    const d = this.decorators.find((d) => d.name == "kind");
+    if (d == undefined) {
+      throw new Error("kind contracts should be decorated with @kind");
     }
-    const source = userEntries[0]!;
-
-    const kinds = _.map(source!.statements, (node: Node) => node.kind);
-    const groups = _.groupBy(kinds);
-    // const numExps = _.get(groups, NodeKind.Expression)?.length || 0;
-    // const numVars = _.get(groups, NodeKind.Variable)?.length || 0;
-    // const numInterfaceDecls = _.get(groups, NodeKind.InterfaceDeclaration)?.length || 0;
-    // const numFuncDecls = _.get(groups, NodeKind.FunctionDeclaration)?.length || 0;
-    const numClassDecls = _.get(groups, NodeKind.ClassDeclaration)?.length || 0;
-    // console.log({ kinds, groups });
-
-    if (numClassDecls != 1) {
-      throw new Error("more than 1 user entry");
+    const f = this.fields.find((f) => resolveElementType(f.type) == 0);
+    if (f) {
+      throw new Error(`'${f.type}' can not be used as element types`);
     }
+  }
 
-    source.statements.forEach((node: Node) => {
-      if (node.kind == NodeKind.ClassDeclaration) {
-        const c = this.extractClass(node as ClassDeclaration);
-        this.kind = c;
-        const stmts = this.makeKindEntry(
-          c.name,
-          c.methods.map((m) => m.name),
-          parser
-        );
-        source.statements.push(...stmts);
-        // console.log(c);
+  genEntryFunction(parser: Parser): Statement[] {
+    const arms = this.methods
+      .map((m) => `case ${KindContract.computeFacetSelector(m.name)}: return obj.${m.name}();`)
+      .join("\n        ");
+    const code = `
+    export function facet(obj: ${this.clazz}, sel: u32): externref {
+      switch (sel) {
+        ${arms}
+        default: return null;
       }
-    });
-    const buffer = keccak256(source.text);
-    this.source = buffer.toString("hex");
+    }`;
+    const p = new Parser();
+    p.parseFile(code, parser.currentSource!.normalizedPath, true);
+    return p.sources[p.sources.length - 1]!.statements;
   }
 
-  // async afterInitialize(program: Program) { }
-
-  async afterCompile(module: binaryen.Module) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const elements = _.map(_.get(this, "kind.fields") || [], (f: any) => this.toElement(f["type"]));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const selectors = _.map(_.get(this, "kind.methods") || [], (f: any) => this.selectorUint32(f["name"]));
-    // console.log({ elements, selectors });
-    const meta = new KindMeta(this.language, this.compiler, this.source!, this.options!, elements, selectors);
-    const { kindComp, kindElms, kindFcts } = meta.encode2();
-    module.addCustomSection("kindcomp", kindComp);
-    module.addCustomSection("kindelms", kindElms);
-    module.addCustomSection("kindfcts", kindFcts);
+  getElementTypes(): number[] {
+    return this.fields.map((f) => resolveElementType(f.type));
   }
 
-  // private
-  isUserEntrySource(node: Source) {
-    return node.sourceKind == SourceKind.UserEntry && !node.normalizedPath.startsWith("~lib");
+  getFacetSelectors(): number[] {
+    return this.methods.map((m) => KindContract.computeFacetSelector(m.name));
   }
 
-  extractClass(node: ClassDeclaration) {
+  static singleTopClass(src: Source): ClassDeclaration {
+    const classes = src.statements.filter((s) => s.kind === NodeKind.ClassDeclaration) as ClassDeclaration[];
+    if (classes.length !== 1) throw new Error(`expected exactly 1 top-level class, got ${classes.length}`);
+    return classes[0]!;
+  }
+
+  static extractClass(node: ClassDeclaration) {
     const name = (node.name as IdentifierExpression).text;
     const decorators = node.decorators?.map((d) => this.extractDecorator(d)) || [];
-    const fields = [];
-    const methods = [];
-    const unexpected = [];
+    const fields: FieldModel[] = [];
+    const methods: MethodModel[] = [];
     for (const member of node.members) {
       switch (member.kind) {
         case NodeKind.FieldDeclaration:
@@ -105,96 +92,73 @@ export class KindTransform extends Transform {
           methods.push(this.extractMethod(member as MethodDeclaration));
           break;
         default:
-          unexpected.push(member);
+          break;
       }
     }
-    return { name, decorators, fields, methods };
+    return { decorators, name, fields, methods };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  toElement(_s: string): number {
-    return 1;
-  }
-
-  extractDecorator(node: DecoratorNode) {
+  static extractDecorator(node: DecoratorNode) {
     const name = (node.name as IdentifierExpression).text;
     return { name };
   }
 
-  extractMethod(node: MethodDeclaration) {
+  static extractMethod(node: MethodDeclaration): MethodModel {
     const name = (node.name as IdentifierExpression).text;
     const ret = (node.signature.returnType as unknown as NamedTypeNode).name.identifier.text;
     const params = node.signature.parameters.map((p) => {
-      const name = (p.name as unknown as IdentifierExpression).text;
-      const type = (p.type as unknown as NamedTypeNode).name.identifier.text;
-      return { name, type };
+      const pname = (p.name as unknown as IdentifierExpression).text;
+      const ptype = (p.type as unknown as NamedTypeNode).name.identifier.text;
+      return { name: pname, type: ptype };
     });
     return { name, params, ret };
   }
 
-  extractField(node: FieldDeclaration) {
+  static extractField(node: FieldDeclaration): FieldModel {
     const name = (node.name as IdentifierExpression).text;
     const type = (node.type as unknown as NamedTypeNode).name.identifier.text;
     return { name, type };
   }
 
-  traverseNode(node: Node) {
-    // Output kind and name properties
-    const name = _.get(node, "name") || _.get(node, "text") || "unknown";
-    console.log(`Kind: ${node.kind}, name: ${name.toString()}`);
-    // Check other properties
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _.forEach(_.omit(node, ["kind", "name"]), (value: any) => {
-      // Check if the property is an array
-      if (_.isArray(value)) {
-        // Iterate through each element in the array
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _.forEach(value, (element: any) => {
-          // Check if the element is a Node object
-          if (_.isObject(element) && "kind" in element) {
-            this.traverseNode(element as Node); // Recursively traverse the Node object
-          }
-        });
-      } else if (_.isObject(value) && value instanceof Node) {
-        // If the property is an object and a subclass of Node, recursively traverse it
-        this.traverseNode(value as Node);
-      } else {
-        // Handle other types of properties
-        // console.log(`Property '${key}' value: ${value}`);
-      }
-    });
+  static computeFacetSelector(method: string): number {
+    const b4 = keccak256(Buffer.from(method, "utf8")).subarray(0, 4);
+    return b4.readUInt32BE(0);
+  }
+}
+
+export class KindTransform extends Transform {
+  info: CompilationInfo;
+  contract?: KindContract;
+
+  constructor(ci: CompilationInfo) {
+    super();
+    this.info = ci;
   }
 
-  makeKindEntry(clazz: string, methods: string[], parser: Parser): Statement[] {
-    const arms: string[] = [];
-    methods.forEach((method) => {
-      const sel = this.selectorUint32(method);
-      arms.push(`case ${sel}: return obj.${method}(); break;`);
-    });
-    const stmt = `
-    export function entry(obj: ${clazz}, sel: u32): externref {
-        switch (sel) {
-            ${arms.join("            \n")}
-            default: return null;
-        }
-    }
-    `;
-    // console.log(methods);
-    // console.log(stmt);
-    const newParser = new Parser();
-    newParser.parseFile(stmt, parser.currentSource!.normalizedPath, true);
-    return newParser.sources[0]!.statements;
+  async afterParse(parser: Parser) {
+    const user = parser.sources.filter(
+      (s) => s.sourceKind === SourceKind.UserEntry && !s.normalizedPath.startsWith("~lib")
+    );
+    if (user.length !== 1) throw new Error("expected exactly 1 user entry");
+    const source = user[0]!;
+    const contract = new KindContract(source);
+    contract.validate();
+
+    const sourceHash = keccak256(source.text).toString("hex");
+    source.statements.push(...contract.genEntryFunction(parser));
+    this.contract = contract;
+    this.info.fill(sourceHash);
   }
 
-  selectorBytes4(method: string): Buffer {
-    return keccak256(Buffer.from(method)).subarray(0, 4);
-  }
-
-  selectorUint32(method: string): number {
-    return this.selectorBytes4(method).readUInt32BE(0);
-  }
-
-  bytes4ToUint32(bytes4: Buffer): number {
-    return bytes4.readUInt32BE(0);
+  async afterCompile(module: binaryen.Module) {
+    if (this.contract === undefined) throw new Error("kind contract not found");
+    const contract = this.contract;
+    const elements = contract.getElementTypes();
+    const facets = contract.getFacetSelectors();
+    const sections = new KindSections(this.info, elements, facets);
+    const { kindComp, kindElms, kindFcts } = sections.encodeAll();
+    module.addCustomSection("kindcomp", kindComp);
+    module.addCustomSection("kindelms", kindElms);
+    module.addCustomSection("kindfcts", kindFcts);
   }
 }

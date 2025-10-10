@@ -1,6 +1,6 @@
 {
   "name": "@everyprotocol/kind-as",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "type": "module",
   "files": [
     "bin/",
@@ -15,12 +15,10 @@
   "devDependencies": {
     "@eslint/js": "^9.26.0",
     "@types/bun": "latest",
-    "@types/lodash-es": "^4.17.12",
     "assemblyscript": "^0.27.36",
     "commander": "^13.1.0",
     "eslint": "^9.26.0",
     "keccak256": "^1.0.6",
-    "lodash-es": "^4.17.21",
     "typedoc": "^0.28.7",
     "typedoc-plugin-markdown": "^4.6.3",
     "typescript": "^5.8.3",

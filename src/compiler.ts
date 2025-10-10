@@ -3,6 +3,7 @@ import { version as ascVersion, OutputStream, main as ascMain } from "assemblysc
 import path from "path";
 import url from "url";
 import { version } from "../package.json";
+import { CompilationInfo } from "./sections.js";
 
 export class KindCompiler {
   language: string;
@@ -27,16 +28,13 @@ export class KindCompiler {
     const { libPath, language } = this.resovleLib(lib);
     const options = this.coreOptions(debug, shrinkLevel, optimizeLevel);
     const userOptions = [file, "--lib", libPath, "--outFile", out, ...(text ? ["--textFile", text] : [])];
-    const tr = new KindTransform(language, this.compiler, options.join(" "));
+    const tr = new KindTransform(new CompilationInfo(language, this.compiler, options.join(" ")));
     const result = await ascMain([...options, ...userOptions], {
       transforms: [tr],
       stderr: process.stderr as OutputStream,
       stdout: process.stdout as OutputStream,
     });
-
-    if (result.error) {
-      throw result.error;
-    }
+    return result;
   }
 
   resovleLib(lib?: string): { libPath: string; language: string } {
@@ -68,7 +66,7 @@ export class KindCompiler {
       "--use",
       "abort=",
       "--memoryBase",
-      "2048",
+      "32768",
     ];
   }
 }
