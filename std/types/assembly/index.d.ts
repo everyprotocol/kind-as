@@ -92,87 +92,84 @@ declare class Info extends Element {
 declare abstract class Pixel {
   readonly c: ColorType;
   protected constructor(c: ColorType);
+}
 
-  static l8(y: u8): Pixel.L8;
-  static la8(y: u8, a: u8): Pixel.La8;
+declare class PixelL8 extends Pixel {
+  y: u8;
+  constructor(y: u8);
+}
 
-  static rgb8(r: u8, g: u8, b: u8): Pixel.Rgb8;
-  static rgba8(r: u8, g: u8, b: u8, a: u8): Pixel.Rgba8;
+declare class PixelLa8 extends Pixel {
+  y: u8;
+  a: u8;
+  constructor(y: u8, a: u8);
+}
 
-  static rgb16(r: u16, g: u16, b: u16): Pixel.Rgb16;
-  static rgba16(r: u16, g: u16, b: u16, a: u16): Pixel.Rgba16;
+declare class PixelRgb8 extends Pixel {
+  r: u8;
+  g: u8;
+  b: u8;
+  constructor(r: u8, g: u8, b: u8);
+}
 
-  static rgbF32(r: f32, g: f32, b: f32): Pixel.RgbF32;
-  static rgbaF32(r: f32, g: f32, b: f32, a: f32): Pixel.RgbaF32;
+declare class PixelRgba8 extends Pixel {
+  r: u8;
+  g: u8;
+  b: u8;
+  a: u8;
+  constructor(r: u8, g: u8, b: u8, a: u8);
+}
+
+declare class PixelL16 extends Pixel {
+  y: u16;
+  constructor(y: u16);
+}
+
+declare class PixelLa16 extends Pixel {
+  y: u16;
+  a: u16;
+  constructor(y: u16, a: u16);
+}
+
+declare class PixelRgb16 extends Pixel {
+  r: u16;
+  g: u16;
+  b: u16;
+  constructor(r: u16, g: u16, b: u16);
+}
+
+declare class PixelRgba16 extends Pixel {
+  r: u16;
+  g: u16;
+  b: u16;
+  a: u16;
+  constructor(r: u16, g: u16, b: u16, a: u16);
+}
+
+declare class PixelRgbF32 extends Pixel {
+  r: f32;
+  g: f32;
+  b: f32;
+  constructor(r: f32, g: f32, b: f32);
+}
+
+declare class PixelRgbaF32 extends Pixel {
+  r: f32;
+  g: f32;
+  b: f32;
+  a: f32;
+  constructor(r: f32, g: f32, b: f32, a: f32);
 }
 
 declare namespace Pixel {
-  class L8 extends Pixel {
-    y: u8;
-    constructor(y: u8);
-  }
-
-  class La8 extends Pixel {
-    y: u8;
-    a: u8;
-    constructor(y: u8, a: u8);
-  }
-
-  class Rgb8 extends Pixel {
-    r: u8;
-    g: u8;
-    b: u8;
-    constructor(r: u8, g: u8, b: u8);
-  }
-
-  class Rgba8 extends Pixel {
-    r: u8;
-    g: u8;
-    b: u8;
-    a: u8;
-    constructor(r: u8, g: u8, b: u8, a: u8);
-  }
-
-  class L16 extends Pixel {
-    y: u16;
-    constructor(y: u16);
-  }
-
-  class La16 extends Pixel {
-    y: u16;
-    a: u16;
-    constructor(y: u16, a: u16);
-  }
-
-  class Rgb16 extends Pixel {
-    r: u16;
-    g: u16;
-    b: u16;
-    constructor(r: u16, g: u16, b: u16);
-  }
-
-  class Rgba16 extends Pixel {
-    r: u16;
-    g: u16;
-    b: u16;
-    a: u16;
-    constructor(r: u16, g: u16, b: u16, a: u16);
-  }
-
-  class RgbF32 extends Pixel {
-    r: f32;
-    g: f32;
-    b: f32;
-    constructor(r: f32, g: f32, b: f32);
-  }
-
-  class RgbaF32 extends Pixel {
-    r: f32;
-    g: f32;
-    b: f32;
-    a: f32;
-    constructor(r: f32, g: f32, b: f32, a: f32);
-  }
+  function L8(y: u8): PixelL8;
+  function La8(y: u8, a: u8): PixelLa8;
+  function Rgb8(r: u8, g: u8, b: u8): PixelRgb8;
+  function Rgba8(r: u8, g: u8, b: u8, a: u8): PixelRgba8;
+  function Rgb16(r: u16, g: u16, b: u16): PixelRgb16;
+  function Rgba16(r: u16, g: u16, b: u16, a: u16): PixelRgba16;
+  function RgbF32(r: f32, g: f32, b: f32): PixelRgbF32;
+  function RgbaF32(r: f32, g: f32, b: f32, a: f32): PixelRgbaF32;
 }
 
 declare class Rect {
@@ -201,9 +198,9 @@ type PointU32 = u64;
 type PointI32 = u64;
 
 declare namespace Point {
-  function f32(x: f32, y: f32): PointF32;
-  function u32(x: u32, y: u32): PointU32;
-  function i32(x: i32, y: i32): PointI32;
+  function F32(x: f32, y: f32): PointF32;
+  function U32(x: u32, y: u32): PointU32;
+  function I32(x: i32, y: i32): PointI32;
 }
 
 declare class ControlPoints {
