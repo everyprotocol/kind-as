@@ -760,8 +760,12 @@ export namespace value {
   export declare function symbol(value: Value): string;
 
   // @ts-ignore: decorator
-  @external("value", "picture")
-  export declare function picture(value: Value): Image;
+  @external("value", "meta")
+  export declare function meta(value: Value): Json;
+
+  // @ts-ignore: decorator
+  @external("value", "figure")
+  export declare function figure(value: Value): Image;
 
 }
 
@@ -792,8 +796,12 @@ export namespace unique {
   export declare function symbol(unique: Unique): string;
 
   // @ts-ignore: decorator
-  @external("unique", "picture")
-  export declare function picture(unique: Unique): Image;
+  @external("unique", "meta")
+  export declare function meta(unique: Unique): Json;
+
+  // @ts-ignore: decorator
+  @external("unique", "figure")
+  export declare function figure(unique: Unique): Image;
 
 }
 

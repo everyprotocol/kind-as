@@ -320,7 +320,8 @@ declare namespace value {
   function std(value: Value): u8;
   function decimals(value: Value): u8;
   function symbol(value: Value): string;
-  function picture(value: Value): Image;
+  function meta(value: Value): Json;
+  function figure(value: Value): Image;
 }
 
 declare namespace unique {
@@ -330,7 +331,8 @@ declare namespace unique {
   function std(unique: Unique): u8;
   function decimals(unique: Unique): u8;
   function symbol(unique: Unique): string;
-  function picture(unique: Unique): Image;
+  function meta(unique: Unique): Json;
+  function figure(unique: Unique): Image;
 }
 
 declare namespace arcs {
