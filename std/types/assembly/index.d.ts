@@ -344,6 +344,7 @@ declare namespace arcs {
   function objectId(arcs: Arcs, index: u32): u64;
   function objectFacetJson(arcs: Arcs, index: u32, sel: u32): Json;
   function objectFacetImage(arcs: Arcs, index: u32, sel: u32): Image;
+  function objectElementInfo(arcs: Arcs, index: u32, elem: u32): Info;
 }
 
 declare namespace projection {

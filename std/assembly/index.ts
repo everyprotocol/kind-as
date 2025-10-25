@@ -839,6 +839,10 @@ export namespace arcs {
   @external("arcs", "object_facet_image")
   export declare function objectFacetImage(arcs: Arcs, index: u32, sel: u32): Image;
 
+  // @ts-ignore: decorator
+  @external("arcs", "object_element_info")
+  export declare function objectElementInfo(arcs: Arcs, index: u32, elem: u32): Info;
+
 }
 
 export namespace projection {
